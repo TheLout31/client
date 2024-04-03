@@ -3,6 +3,10 @@ import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import "./TextEditor.css";
 import { io } from "socket.io-client";
+import { useParams } from "react-router-dom";
+import NavBar from "./NavBar/NavBar";
+
+const INTERVAL_TIME = 1000;
 
 const TOOLBAR_OTIONS = [
   [{ header: [1, 2, 3, 4, 5, 6, false] }],
@@ -17,9 +21,9 @@ const TOOLBAR_OTIONS = [
 ];
 
 const TextEditor = () => {
+  const { id: documentID } = useParams();
   const [socket, setSocket] = useState();
   const [quill, setQuill] = useState();
-
   useEffect(() => {
     const s = io("http://localhost:3001");
     setSocket(s);
@@ -27,6 +31,26 @@ const TextEditor = () => {
       s.disconnect();
     };
   }, []);
+
+  useEffect(() => {
+    if (socket == null || quill == null) return;
+    socket.once("load-document", (document) => {
+      quill.setContents(document);
+      quill.enable();
+    });
+    socket.emit("get-document", documentID);
+  }, [socket, quill, documentID]);
+
+  useEffect(() => {
+    if (socket == null || quill == null) return;
+    const interval = setInterval(() => {
+      socket.emit("save-document", quill.getContents());
+    }, INTERVAL_TIME);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [socket, quill]);
 
   useEffect(() => {
     if (socket == null || quill == null) return;
@@ -38,7 +62,7 @@ const TextEditor = () => {
     socket.on("receive-changes", handler);
 
     return () => {
-      socket.off("receive-change", handler);
+      socket.off("receive-changes", handler);
     };
   }, [socket, quill]);
 
@@ -63,12 +87,19 @@ const TextEditor = () => {
       theme: "snow",
       modules: { toolbar: TOOLBAR_OTIONS },
     });
+    q.disable();
+    q.setText("Loading...");
     setQuill(q);
   }, []);
 
   return (
-    <div className="container" ref={wrapperRef}>
-      Text Editor
+    <div className="container">
+      {/* Render NavBar component */}
+      <NavBar />
+      {/* Render Quill editor */}
+      <div  ref={wrapperRef}>
+        Text Editor
+      </div>
     </div>
   );
 };
