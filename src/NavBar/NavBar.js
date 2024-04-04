@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 const NavBar = () => {
   const navigate = useNavigate();
   function handleOnClick(){
-    navigate(-1)
+    navigate("/")
   }
 
   return (

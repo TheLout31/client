@@ -1,20 +1,24 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./HomePage.css"; // Importing the CSS file for styling
 import Card from "../Card/Card";
 import { FaPlus } from "react-icons/fa";
 import NavBar from "../NavBar/NavBar";
+import { useDocumentId } from "../Context/DocumentIDContext";
+import ListCard from "../ListCard/ListCard";
 
 const HomePage = () => {
   return (
     <div className="homepage">
-      <NavBar/>
+      <NavBar />
       <div className="content">
-        <h2>Recent Documents</h2>
+        <h1>Create Documents</h1>
         {/* Here you can render recent documents */}
+        <Card data={<FaPlus className="add-icon" />} />
+
+        <h2>Recent Documents</h2>
         <ul className="document-list">
-          <Card data={<FaPlus className="add-icon" />} />
-          <Card />
-          <Card />
+          <ListCard />
+          <ListCard />
           {/* Add more documents as needed */}
         </ul>
       </div>
