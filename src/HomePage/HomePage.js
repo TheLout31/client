@@ -7,6 +7,16 @@ import { useDocumentId } from "../Context/DocumentIDContext";
 import ListCard from "../ListCard/ListCard";
 
 const HomePage = () => {
+  const { documentID } = useDocumentId();
+
+  useEffect(() => {});
+
+  function showIds() {
+    const interests = localStorage.getItem("userInfo");
+
+    const interestsParsed = JSON.parse(interests);
+    console.log(interestsParsed);
+  }
   return (
     <div className="homepage">
       <NavBar />
@@ -18,10 +28,11 @@ const HomePage = () => {
         <h2>Recent Documents</h2>
         <ul className="document-list">
           <ListCard />
-          <ListCard />
+          <ListCard />  
           {/* Add more documents as needed */}
         </ul>
       </div>
+      <button onClick={showIds}>Show Data</button>
     </div>
   );
 };
